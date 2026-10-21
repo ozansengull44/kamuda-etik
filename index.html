@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kamuda Etik Kurallar</title>
+<style>
+  :root { --bg: #0b1220; --ui: rgba(16, 24, 40, 0.78); --ui-text: #f2f5fa; --accent: #c00000; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  #stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #slide { position: relative; aspect-ratio: 16 / 9; width: min(100vw, calc(100vh * 16 / 9)); }
+  #slide img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
+  /* video kutusu slayttaki kapak karesinin tam üstünde: 128,260 / 1104x621 (1920x1080 tuvalde) */
+  #vbox { position: absolute; left: 6.6667%; top: 24.074%; width: 57.5%; height: 57.5%; display: none; cursor: pointer; overflow: hidden; }
+  #vbox video { width: 100%; height: 100%; object-fit: cover; display: block; background: transparent; }
+  #play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+  #play svg { width: 14%; height: auto; filter: drop-shadow(0 8px 24px rgba(0,0,0,.35)); }
+  #bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; gap: 6px; align-items: center;
+    background: var(--ui); color: var(--ui-text); padding: 6px 8px; border-radius: 999px; transition: opacity .3s; font-size: 14px; }
+  #bar button { all: unset; cursor: pointer; padding: 8px 12px; border-radius: 999px; color: var(--ui-text); line-height: 1; }
+  #bar button:hover, #bar button:focus-visible { background: rgba(255, 255, 255, 0.14); }
+  #count { min-width: 64px; text-align: center; font-variant-numeric: tabular-nums; }
+  body.idle #bar { opacity: 0; }
+  body.idle { cursor: none; }
+  #notes { position: fixed; left: 16px; right: 16px; bottom: 72px; max-width: 900px; margin: 0 auto; background: var(--ui); color: var(--ui-text);
+    padding: 16px 20px; border-radius: 14px; font-size: 18px; line-height: 1.5; display: none; }
+  body.show-notes #notes { display: block; }
+  #help { position: fixed; top: 16px; right: 16px; background: var(--ui); color: var(--ui-text); padding: 12px 16px; border-radius: 12px;
+    font-size: 14px; line-height: 1.6; display: none; }
+  body.show-help #help { display: block; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="slide">
+    <img id="img" alt="">
+    <div id="vbox" role="button" aria-label="Videoyu oynat veya durdur">
+      <video id="vid" playsinline preload="metadata"></video>
+      <div id="play"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#C00000"/><polygon points="40,30 72,50 40,70" fill="#ffffff"/></svg></div>
+    </div>
+  </div>
+</div>
+<div id="notes"></div>
+<div id="help">
+  <b>Kısayollar</b><br>
+  → / boşluk / PageDown: sonraki slayt<br>
+  ← / PageUp: önceki slayt<br>
+  F: tam ekran · N: konuşmacı notu<br>
+  Video: görüntüye tıkla ya da Enter
+</div>
+<div id="bar">
+  <button id="prev" aria-label="Önceki slayt">◀</button>
+  <span id="count">1 / 19</span>
+  <button id="next" aria-label="Sonraki slayt">▶</button>
+  <button id="fs" aria-label="Tam ekran">Tam ekran</button>
+  <button id="nt" aria-label="Konuşmacı notu">Not</button>
+  <button id="hp" aria-label="Kısayollar">?</button>
+</div>
+<script src="notes.js"></script>
+<script>
+  const N = 19;
+  // video slaytları (1'den başlayan numara) → video dosyası
+  const VIDEOS = { 4: "videos/a1.mp4", 6: "videos/a2.mp4", 8: "videos/a3.mp4", 10: "videos/a4.mp4", 12: "videos/a5.mp4", 14: "videos/a6.mp4", 16: "videos/a7.mp4" };
+  const src = i => "slides/s" + String(i).padStart(2, "0") + ".jpg";
+  const img = document.getElementById("img"), vbox = document.getElementById("vbox"), vid = document.getElementById("vid");
+  const play = document.getElementById("play"), count = document.getElementById("count"), notes = document.getElementById("notes");
+  const slide = document.getElementById("slide");
+  let cur = 1;
+
+  for (let i = 1; i <= N; i++) { const p = new Image(); p.src = src(i); }   // önceden yükle
+
+  function fitRadius() { vbox.style.borderRadius = (slide.clientWidth * 24 / 1920) + "px"; }
+  function show(i) {
+    cur = Math.max(1, Math.min(N, i));
+    img.src = src(cur);
+    img.alt = "Slayt " + cur;
+    vid.pause();
+    if (VIDEOS[cur]) {
+      vid.src = VIDEOS[cur]; vid.currentTime = 0;
+      vbox.style.display = "block"; play.style.display = "flex";
+      vid.style.visibility = "hidden";   // oynatılana kadar slayttaki kapak karesi görünür
+    } else {
+      vid.removeAttribute("src"); vid.load(); vbox.style.display = "none";
+    }
+    count.textContent = cur + " / " + N;
+    notes.textContent = (window.NOTES && window.NOTES[cur - 1]) || "";
+    history.replaceState(null, "", "#" + cur);
+    fitRadius();
+  }
+  function toggleVideo() {
+    if (!VIDEOS[cur]) return;
+    if (vid.paused) { vid.style.visibility = "visible"; vid.play(); play.style.display = "none"; }
+    else { vid.pause(); play.style.display = "flex"; }
+  }
+  vid.addEventListener("ended", () => { play.style.display = "flex"; });
+  vbox.addEventListener("click", e => { e.stopPropagation(); toggleVideo(); });
+
+  const next = () => show(cur + 1), prev = () => show(cur - 1);
+  document.getElementById("next").onclick = next;
+  document.getElementById("prev").onclick = prev;
+  const fullscreen = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  document.getElementById("fs").onclick = fullscreen;
+  document.getElementById("nt").onclick = () => document.body.classList.toggle("show-notes");
+  document.getElementById("hp").onclick = () => document.body.classList.toggle("show-help");
+
+  document.addEventListener("keydown", e => {
+    if (["ArrowRight", "PageDown", " ", "ArrowDown"].includes(e.key)) { e.preventDefault(); next(); }
+    else if (["ArrowLeft", "PageUp", "ArrowUp", "Backspace"].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === "Home") show(1);
+    else if (e.key === "End") show(N);
+    else if (e.key === "f" || e.key === "F") fullscreen();
+    else if (e.key === "n" || e.key === "N") document.body.classList.toggle("show-notes");
+    else if (e.key === "Enter" || e.key === "k" || e.key === "K") toggleVideo();
+    else if (e.key === "?") document.body.classList.toggle("show-help");
+  });
+
+  // dokunmatik ekranda kaydırma
+  let tx = null;
+  document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+  });
+
+  // fare durunca alt çubuk gizlenir
+  let idle;
+  const wake = () => { document.body.classList.remove("idle"); clearTimeout(idle); idle = setTimeout(() => document.body.classList.add("idle"), 2500); };
+  ["mousemove", "touchstart", "keydown"].forEach(ev => document.addEventListener(ev, wake, { passive: true }));
+  wake();
+  window.addEventListener("resize", fitRadius);
+  window.addEventListener("hashchange", () => { const i = parseInt(location.hash.slice(1), 10); if (i && i !== cur) show(i); });
+
+  show(parseInt(location.hash.slice(1), 10) || 1);
+</script>
+</body>
+</html>
