@@ -68,7 +68,13 @@
   const slide = document.getElementById("slide");
   let cur = 1;
 
-  for (let i = 1; i <= N; i++) { const p = new Image(); p.src = src(i); }   // önceden yükle
+  // açık slayt yüklendikten sonra diğerlerini sırayla önceden yükle
+  img.addEventListener("load", function preload() {
+    img.removeEventListener("load", preload);
+    let k = 0;
+    const nextOne = () => { if (++k > N) return; const p = new Image(); p.onload = p.onerror = nextOne; p.src = src(k); };
+    nextOne();
+  });
 
   function fitRadius() { vbox.style.borderRadius = (slide.clientWidth * 24 / 1920) + "px"; }
   function show(i) {
