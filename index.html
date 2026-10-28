@@ -51,7 +51,7 @@
 </div>
 <div id="bar">
   <button id="prev" aria-label="Önceki slayt">◀</button>
-  <span id="count">1 / 19</span>
+  <span id="count">1 / 28</span>
   <button id="next" aria-label="Sonraki slayt">▶</button>
   <button id="fs" aria-label="Tam ekran">Tam ekran</button>
   <button id="nt" aria-label="Konuşmacı notu">Not</button>
@@ -59,9 +59,9 @@
 </div>
 <script src="notes.js"></script>
 <script>
-  const N = 19;
+  const N = 28;
   // video slaytları (1'den başlayan numara) → video dosyası
-  const VIDEOS = { 4: "videos/a1.mp4", 6: "videos/a2.mp4", 8: "videos/a3.mp4", 10: "videos/a4.mp4", 12: "videos/a5.mp4", 14: "videos/a6.mp4", 16: "videos/a7.mp4" };
+  const VIDEOS = { 5: "videos/a0.mp4", 13: "videos/a1.mp4", 15: "videos/a2.mp4", 17: "videos/a3.mp4", 19: "videos/a4.mp4", 21: "videos/a5.mp4", 23: "videos/a6.mp4", 25: "videos/a7.mp4" };
   const src = i => "slides/s" + String(i).padStart(2, "0") + ".jpg";
   const img = document.getElementById("img"), vbox = document.getElementById("vbox"), vid = document.getElementById("vid");
   const play = document.getElementById("play"), count = document.getElementById("count"), notes = document.getElementById("notes");
