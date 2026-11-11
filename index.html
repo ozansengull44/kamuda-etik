@@ -3,142 +3,457 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kamuda Etik Kurallar</title>
+<title>Temel Muhasebe Denemesi</title>
+<meta name="description" content="Temel Muhasebe vize denemesi: 150 soru, konu anlatım videosu ve her soru için çözüm videosu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
-  :root { --bg: #0b1220; --ui: rgba(16, 24, 40, 0.78); --ui-text: #f2f5fa; --accent: #c00000; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-  #stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-  #slide { position: relative; aspect-ratio: 16 / 9; width: min(100vw, calc(100vh * 16 / 9)); }
-  #slide img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
-  /* video kutusu slayttaki kapak karesinin tam üstünde: 128,260 / 1104x621 (1920x1080 tuvalde) */
-  #vbox { position: absolute; left: 6.6667%; top: 24.074%; width: 57.5%; height: 57.5%; display: none; cursor: pointer; overflow: hidden; }
-  #vbox video { width: 100%; height: 100%; object-fit: cover; display: block; background: transparent; }
-  #play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-  #play svg { width: 14%; height: auto; filter: drop-shadow(0 8px 24px rgba(0,0,0,.35)); }
-  #bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; gap: 6px; align-items: center;
-    background: var(--ui); color: var(--ui-text); padding: 6px 8px; border-radius: 999px; transition: opacity .3s; font-size: 14px; }
-  #bar button { all: unset; cursor: pointer; padding: 8px 12px; border-radius: 999px; color: var(--ui-text); line-height: 1; }
-  #bar button:hover, #bar button:focus-visible { background: rgba(255, 255, 255, 0.14); }
-  #count { min-width: 64px; text-align: center; font-variant-numeric: tabular-nums; }
-  body.idle #bar { opacity: 0; }
-  body.idle { cursor: none; }
-  #notes { position: fixed; left: 16px; right: 16px; bottom: 72px; max-width: 900px; margin: 0 auto; background: var(--ui); color: var(--ui-text);
-    padding: 16px 20px; border-radius: 14px; font-size: 18px; line-height: 1.5; display: none; }
-  body.show-notes #notes { display: block; }
-  #help { position: fixed; top: 16px; right: 16px; background: var(--ui); color: var(--ui-text); padding: 12px 16px; border-radius: 12px;
-    font-size: 14px; line-height: 1.6; display: none; }
-  body.show-help #help { display: block; }
+:root{
+  --paper:#f8f5ec; --grid:#e3ddcc; --ink:#23262f; --muted:#6b6a64; --card:#fffdf7; --line:#ddd5c2;
+  --red:#c8372d; --blue:#2a54b0; --green:#23885a; --yellow:#ffe46b; --pink:#f59fb7; --teal:#7fd3cf;
+  --ok-bg:#e3f5ea; --bad-bg:#fbe5e2; --board:#1f3a30; --chalk:#f3f1e7;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:Nunito,system-ui,sans-serif; font-size:16px; line-height:1.5; min-height:100vh;
+}
+button{font:inherit;cursor:pointer}
+.hand{font-family:"Patrick Hand",cursive}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 120px}
+header.top{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin:8px 0 18px}
+header.top h1{margin:0;font-family:"Patrick Hand",cursive;font-size:30px;color:var(--red);line-height:1.1}
+header.top h1 small{display:block;font-size:17px;color:var(--blue)}
+.btn{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:12px;padding:9px 14px;font-weight:700;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--yellow)}
+.btn.blue{background:#dbe6ff}
+.btn.ghost{box-shadow:none;border-color:var(--line);background:transparent}
+.btn.sm{padding:6px 10px;font-size:14px;border-radius:10px}
+
+/* Start */
+.hero{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:22px;box-shadow:5px 5px 0 var(--ink)}
+.hero h2{font-family:"Patrick Hand",cursive;font-size:28px;margin:0 0 6px;color:var(--blue)}
+.hero p{margin:6px 0;color:var(--muted)}
+.hero .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:18px}
+.feat div{border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:14px;background:#fff}
+.feat b{display:block;color:var(--red)}
+.topics{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:#eef3ff;color:var(--blue);border:1px solid #c9d6f5}
+
+/* Quiz */
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(4px);padding:10px 0;margin-bottom:10px}
+.bar .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:14px}
+.stats span{margin-left:10px}
+.stats .ok{color:var(--green)} .stats .bad{color:var(--red)}
+.prog{height:10px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--green));width:0;transition:width .4s}
+.stage{position:relative;overflow:hidden}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:20px;box-shadow:5px 5px 0 var(--ink)}
+.card.slide-in{animation:slideIn .38s cubic-bezier(.2,.8,.2,1)}
+.card.slide-back{animation:slideBack .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes slideIn{from{transform:translateX(70px);opacity:0}to{transform:none;opacity:1}}
+@keyframes slideBack{from{transform:translateX(-70px);opacity:0}to{transform:none;opacity:1}}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.qno{font-family:"Patrick Hand",cursive;font-size:24px;color:var(--red)}
+.qtext{font-size:18px;font-weight:700;margin:4px 0 16px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:2px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;color:var(--ink);transition:border-color .15s,background .15s,transform .1s}
+.opt:hover:not([disabled]){border-color:var(--blue);transform:translateX(3px)}
+.opt .L{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;background:var(--paper)}
+.opt[disabled]{cursor:default}
+.opt.correct{border-color:var(--green);background:var(--ok-bg)}
+.opt.correct .L{background:var(--green);color:#fff;border-color:var(--green)}
+.opt.wrong{border-color:var(--red);background:var(--bad-bg)}
+.opt.wrong .L{background:var(--red);color:#fff;border-color:var(--red)}
+.opt.wrong{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.after{margin-top:16px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
+.after.show{display:flex}
+.after .msg{flex:1 1 220px;font-weight:700}
+.msg.ok{color:var(--green)} .msg.bad{color:var(--red)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
+.gridwrap{margin-top:18px;background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:14px;display:none}
+.gridwrap.show{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px}
+.grid button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:6px 0;font-weight:700;font-size:13px}
+.grid button.ok{background:var(--ok-bg);border-color:var(--green);color:var(--green)}
+.grid button.bad{background:var(--bad-bg);border-color:var(--red);color:var(--red)}
+.grid button.cur{outline:3px solid var(--yellow);outline-offset:1px}
+
+/* Result */
+.result h2{font-family:"Patrick Hand",cursive;font-size:32px;margin:0;color:var(--blue)}
+.score{font-size:56px;font-weight:800;color:var(--green);line-height:1}
+.wlist{margin-top:14px;display:grid;gap:8px}
+.witem{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff}
+.witem p{margin:0;font-size:14px}
+
+/* Player */
+.modal{position:fixed;inset:0;background:rgba(20,22,28,.72);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex}
+.player{width:min(960px,100%);background:#0f1b16;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:3px solid #000}
+.ptitle{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:#111;color:#eee;font-weight:700;font-size:14px}
+.ptitle .rec{display:inline-flex;align-items:center;gap:6px}
+.ptitle .rec:before{content:"";width:9px;height:9px;border-radius:50%;background:#e33;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.screen{position:relative;aspect-ratio:16/9;background:var(--board);background-image:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.06),transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(0,0,0,.25),transparent 60%);color:var(--chalk);overflow:hidden}
+@media (max-width:640px){.screen{aspect-ratio:auto;height:min(72vh,560px)}}
+.board{position:absolute;inset:0;padding:22px 26px 70px;overflow:auto;scroll-behavior:smooth}
+.board h3{font-family:"Patrick Hand",cursive;font-weight:400;font-size:clamp(22px,3.4vw,34px);color:var(--yellow);margin:0 0 10px;padding-right:120px}
+.board .bq{font-size:clamp(13px,1.6vw,16px);opacity:.85;border-left:3px solid var(--teal);padding-left:10px;margin:0 0 12px;padding-right:110px}
+.board .li{font-family:"Patrick Hand",cursive;font-size:clamp(17px,2.3vw,24px);line-height:1.35;margin:8px 0;padding-left:26px;position:relative;opacity:0;transform:translateY(8px);transition:opacity .45s,transform .45s;padding-right:100px}
+.board .li:before{content:"✎";position:absolute;left:0;color:var(--pink)}
+.board .li.on{opacity:1;transform:none}
+.board .li.now{color:#fff;text-shadow:0 0 12px rgba(255,228,107,.35)}
+.board .ans{font-family:"Patrick Hand",cursive;font-size:clamp(18px,2.4vw,26px);background:rgba(127,211,207,.15);border:2px dashed var(--teal);border-radius:12px;padding:8px 12px;margin-top:12px;opacity:0;transition:opacity .5s}
+.board .ans.on{opacity:1}
+.jt{margin:12px 0;border-collapse:collapse;width:min(100%,640px);font-family:"Patrick Hand",cursive;font-size:clamp(15px,2vw,21px);opacity:0;transition:opacity .4s}
+.jt.on{opacity:1}
+.jt th{color:var(--teal);font-weight:400;border-bottom:2px solid var(--chalk);padding:4px 8px;text-align:left}
+.jt th.n,.jt td.n{text-align:right;width:110px;border-left:2px solid var(--chalk)}
+.jt td{padding:5px 8px}
+.jt tr.r{opacity:0;transform:translateX(-10px);transition:opacity .4s,transform .4s}
+.jt tr.r.on{opacity:1;transform:none}
+.jt tr.cr td:first-child{padding-left:42px}
+.jt tr.sep td{border-top:2px solid var(--chalk);padding:0;height:4px}
+.avatar{position:absolute;right:14px;top:12px;width:104px;height:120px;pointer-events:none}
+.avatar .mouth{transform-origin:50% 50%;transform-box:fill-box}
+.avatar.talk .mouth{animation:talk .22s infinite alternate}
+@keyframes talk{from{transform:scaleY(.25)}to{transform:scaleY(1.15)}}
+.avatar.talk .arm{animation:wave 1.4s infinite ease-in-out;transform-origin:20% 10%;transform-box:fill-box}
+@keyframes wave{50%{transform:rotate(-12deg)}}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;background:linear-gradient(transparent,rgba(0,0,0,.75) 35%);font-size:clamp(13px,1.7vw,17px);color:#fff;text-align:center;min-height:52px}
+.cap span{background:rgba(0,0,0,.55);padding:3px 8px;border-radius:6px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.big{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.35);border:0;color:#fff}
+.big b{width:84px;height:84px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-size:34px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.ctrl{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#111;color:#ddd;flex-wrap:wrap}
+.ctrl button{background:#222;border:1px solid #333;color:#eee;border-radius:8px;padding:6px 10px;font-weight:700;font-size:14px}
+.ctrl button:hover{background:#333}
+.ctrl .pb{flex:1 1 140px;height:8px;background:#333;border-radius:999px;overflow:hidden;cursor:pointer}
+.ctrl .pb i{display:block;height:100%;width:0;background:var(--red);transition:width .3s}
+.ctrl .t{font-size:12.5px;min-width:52px;text-align:center}
+.ctrl .next{background:var(--yellow);color:#111;border-color:var(--yellow)}
+.vframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.note{font-size:12.5px;color:var(--muted);margin-top:22px;text-align:center}
+.kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:12px;background:#fff}
+.board{padding-bottom:120px}
+@media (max-width:520px){.jt th.n,.jt td.n{width:72px}.qtext{font-size:16.5px}.avatar{width:72px;height:84px}.board h3,.board .bq,.board .li{padding-right:70px}.stats span{margin-left:6px}}
 </style>
 </head>
 <body>
-<div id="stage">
-  <div id="slide">
-    <img id="img" alt="">
-    <div id="vbox" role="button" aria-label="Videoyu oynat veya durdur">
-      <video id="vid" playsinline preload="metadata"></video>
-      <div id="play"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#C00000"/><polygon points="40,30 72,50 40,70" fill="#ffffff"/></svg></div>
+<div class="wrap" id="app"></div>
+
+<!-- Video oynatıcı -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Çözüm videosu">
+  <div class="player">
+    <div class="ptitle"><span class="rec" id="pTitle">Çözüm videosu</span><button class="btn sm ghost" style="color:#eee;border-color:#444" id="pClose">Kapat ✕</button></div>
+    <div class="screen" id="screen">
+      <div class="board" id="board"></div>
+      <svg class="avatar" id="avatar" viewBox="0 0 104 120" aria-hidden="true">
+        <ellipse cx="52" cy="116" rx="40" ry="5" fill="rgba(0,0,0,.25)"/>
+        <path d="M14 118 C16 86 30 76 52 76 C74 76 88 86 90 118 Z" fill="#2a54b0"/>
+        <path d="M44 78 L52 96 L60 78 Z" fill="#fff"/>
+        <path d="M50 82 L52 100 L54 82 Z" fill="#c8372d"/>
+        <g class="arm"><path d="M84 96 C96 88 98 74 92 66" stroke="#2a54b0" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="92" cy="64" r="6" fill="#f2c7a5"/><rect x="90" y="46" width="4" height="18" rx="2" fill="#ffe46b" transform="rotate(18 92 55)"/></g>
+        <rect x="46" y="64" width="12" height="14" fill="#f2c7a5"/>
+        <ellipse cx="52" cy="44" rx="25" ry="27" fill="#f2c7a5"/>
+        <path d="M27 42 C26 20 40 13 54 14 C70 15 80 26 77 42 C74 32 66 26 52 27 C40 27 32 32 27 42Z" fill="#3b2a20"/>
+        <circle cx="43" cy="46" r="7" fill="none" stroke="#222" stroke-width="2"/><circle cx="61" cy="46" r="7" fill="none" stroke="#222" stroke-width="2"/><path d="M50 46 H54" stroke="#222" stroke-width="2"/>
+        <circle cx="43" cy="46" r="2.2" fill="#222"/><circle cx="61" cy="46" r="2.2" fill="#222"/>
+        <ellipse class="mouth" cx="52" cy="60" rx="6" ry="3.4" fill="#8a2a22"/>
+      </svg>
+      <div class="cap" id="cap"></div>
+      <button class="big" id="bigPlay" aria-label="Oynat" style="display:none"><b>▶</b></button>
+    </div>
+    <div class="ctrl">
+      <button id="pPlay" aria-label="Oynat / Duraklat">⏸</button>
+      <button id="pPrev" aria-label="Önceki adım">⏮</button>
+      <button id="pNext" aria-label="Sonraki adım">⏭</button>
+      <div class="pb" id="pBar"><i></i></div>
+      <span class="t" id="pTime">0/0</span>
+      <button id="pRate">1x</button>
+      <button id="pMute">🔊</button>
+      <button id="pDone" class="next">Devam →</button>
     </div>
   </div>
 </div>
-<div id="notes"></div>
-<div id="help">
-  <b>Kısayollar</b><br>
-  → / boşluk / PageDown: sonraki slayt<br>
-  ← / PageUp: önceki slayt<br>
-  F: tam ekran · N: konuşmacı notu<br>
-  Video: görüntüye tıkla ya da Enter
-</div>
-<div id="bar">
-  <button id="prev" aria-label="Önceki slayt">◀</button>
-  <span id="count">1 / 29</span>
-  <button id="next" aria-label="Sonraki slayt">▶</button>
-  <button id="fs" aria-label="Tam ekran">Tam ekran</button>
-  <button id="nt" aria-label="Konuşmacı notu">Not</button>
-  <button id="hp" aria-label="Kısayollar">?</button>
-</div>
-<script src="notes.js"></script>
+
+<script src="sorular.js"></script>
+<script src="konu.js"></script>
 <script>
-  const N = 29;
-  // video slaytları (1'den başlayan numara) → video dosyası
-  const VIDEOS = { 5: "videos/a0.mp4", 13: "videos/a1.mp4", 15: "videos/a2.mp4", 17: "videos/a3.mp4", 19: "videos/a4.mp4", 21: "videos/a5.mp4", 23: "videos/a6.mp4", 25: "videos/a7.mp4", 27: "videos/r1.mp4" };
-  const src = i => "slides/s" + String(i).padStart(2, "0") + ".jpg";
-  const img = document.getElementById("img"), vbox = document.getElementById("vbox"), vid = document.getElementById("vid");
-  const play = document.getElementById("play"), count = document.getElementById("count"), notes = document.getElementById("notes");
-  const slide = document.getElementById("slide");
-  let cur = 1;
+(() => {
+const N = SORULAR.length, LET = "ABCDE";
+const KEY = "muh-vize-v1";
+const fmt = n => n.toLocaleString("tr-TR");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-  // açık slayt yüklendikten sonra diğerlerini sırayla önceden yükle
-  img.addEventListener("load", function preload() {
-    img.removeEventListener("load", preload);
-    let k = 0;
-    const nextOne = () => { if (++k > N) return; const p = new Image(); p.onload = p.onerror = nextOne; p.src = src(k); };
-    nextOne();
+// Şıkları soru numarasına göre sabit (deterministik) karıştır
+function rng(seed){ return () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }; }
+SORULAR.forEach((q, i) => {
+  const r = rng(i * 7919 + 17), idx = q.o.map((_, j) => j);
+  for (let j = idx.length - 1; j > 0; j--) { const k = Math.floor(r() * (j + 1)); [idx[j], idx[k]] = [idx[k], idx[j]]; }
+  q.opts = idx.map(j => q.o[j]); q.ans = idx.indexOf(0);
+});
+
+let st = { cur: 0, a: {}, started: false };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.a) st = Object.assign(st, s); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+const counts = () => { let ok = 0, bad = 0; for (const k in st.a) (st.a[k] === SORULAR[k].ans ? ok++ : bad++); return { ok, bad, empty: N - ok - bad }; };
+
+const app = document.getElementById("app");
+let view = st.started ? "quiz" : "start", gridOpen = false, dir = 1;
+
+function header() {
+  return `<header class="top"><h1>Temel Muhasebe<small>Vize Denemesi · ${N} soru</small></h1>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn blue sm" data-act="konu">🎬 Konu Anlatımı</button>
+  ${view !== "start" ? `<button class="btn sm" data-act="home">Ana sayfa</button>` : ""}</div></header>`;
+}
+
+function renderStart() {
+  const c = counts(), done = c.ok + c.bad;
+  const topics = [...new Set(SORULAR.map(q => q.t))];
+  app.innerHTML = header() + `<section class="hero">
+    <h2>Hocanın defterinden ${N} soruluk deneme</h2>
+    <p>Sorular derste işlenen notlardan hazırlandı: muhasebenin tanımı, 12 temel kavram, temel denklik, bilanço, gelir tablosu, hesap işleyişi, hesap planı ve 100–121 hesaplar.</p>
+    <div class="feat">
+      <div><b>Doğru cevap</b>Bir sonraki soruya kendiliğinden kayar.</div>
+      <div><b>Yanlış cevap</b>Deneme durur ve o sorunun çözüm videosu açılır.</div>
+      <div><b>İlerleme kaydedilir</b>Sayfayı kapatsan da kaldığın yerden devam edersin.</div>
+    </div>
+    <div class="row">
+      <button class="btn primary" data-act="go">${done ? `Devam et (${done}/${N})` : "Denemeye başla →"}</button>
+      <button class="btn blue" data-act="konu">🎬 Önce konu anlatımını izle</button>
+      ${done ? `<button class="btn ghost" data-act="reset">Sıfırla</button>` : ""}
+    </div>
+    <div class="topics">${topics.map(t => `<span class="chip">${esc(t)} · ${SORULAR.filter(q => q.t === t).length}</span>`).join("")}</div>
+  </section>
+  <p class="note">Klavye: <span class="kbd">A</span>–<span class="kbd">E</span> şık seçer · <span class="kbd">←</span> <span class="kbd">→</span> sorular arasında gezer</p>`;
+}
+
+function renderQuiz() {
+  const i = st.cur, q = SORULAR[i], c = counts(), chosen = st.a[i];
+  const answered = chosen !== undefined, right = answered && chosen === q.ans;
+  const opts = q.opts.map((o, j) => {
+    let cls = "";
+    if (answered) { if (j === q.ans) cls = "correct"; else if (j === chosen) cls = "wrong"; }
+    return `<button class="opt ${cls}" data-opt="${j}" ${answered ? "disabled" : ""}><span class="L">${LET[j]}</span><span>${esc(o)}</span></button>`;
+  }).join("");
+  app.innerHTML = header() + `
+  <div class="bar"><div class="meta"><span>Soru ${i + 1} / ${N}</span>
+    <span class="stats"><span class="ok">✓ ${c.ok}</span><span class="bad">✗ ${c.bad}</span><span>○ ${c.empty}</span></span></div>
+    <div class="prog"><i style="width:${((c.ok + c.bad) / N * 100).toFixed(1)}%"></i></div></div>
+  <div class="stage"><article class="card ${dir > 0 ? "slide-in" : "slide-back"}">
+    <div class="qhead"><span class="qno">${i + 1}. Soru</span><span class="chip">${esc(q.t)}</span></div>
+    <div class="qtext">${esc(q.q)}</div>
+    <div class="opts">${opts}</div>
+    <div class="after ${answered ? "show" : ""}">
+      <span class="msg ${right ? "ok" : "bad"}">${answered ? (right ? "Doğru! 🎉" : `Yanlış. Doğru cevap: ${LET[q.ans]}`) : ""}</span>
+      <button class="btn sm blue" data-act="watch">▶ Çözüm videosu</button>
+      ${answered && !right ? `<button class="btn sm primary" data-act="next">Sonraki soru →</button>` : ""}
+    </div>
+  </article></div>
+  <div class="nav"><button class="btn sm" data-act="prev" ${i === 0 ? "disabled" : ""}>← Önceki</button>
+    <button class="btn sm ghost" data-act="grid">${gridOpen ? "Soru listesini gizle" : "Tüm sorular"}</button>
+    <button class="btn sm" data-act="${i === N - 1 ? "finish" : "next"}">${i === N - 1 ? "Bitir" : "Sonraki →"}</button></div>
+  <div class="gridwrap ${gridOpen ? "show" : ""}"><div class="grid">${SORULAR.map((qq, k) => {
+    const a = st.a[k]; const cl = a === undefined ? "" : (a === qq.ans ? "ok" : "bad");
+    return `<button class="${cl} ${k === i ? "cur" : ""}" data-go="${k}">${k + 1}</button>`;
+  }).join("")}</div><div style="margin-top:10px;text-align:right"><button class="btn sm primary" data-act="finish">Denemeyi bitir</button></div></div>`;
+}
+
+function renderResult() {
+  const c = counts(), wrong = Object.keys(st.a).map(Number).filter(k => st.a[k] !== SORULAR[k].ans).sort((a, b) => a - b);
+  app.innerHTML = header() + `<section class="hero result">
+    <h2>Deneme sonucu</h2>
+    <div style="display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;margin:10px 0">
+      <div><div class="score">${Math.round(c.ok / N * 100)}</div><small>puan (100 üzerinden)</small></div>
+      <div class="stats" style="font-weight:800"><span class="ok">✓ ${c.ok} doğru</span><span class="bad">✗ ${c.bad} yanlış</span><span>○ ${c.empty} boş</span></div>
+    </div>
+    <div class="row"><button class="btn primary" data-act="retry">Yanlışları yeniden çöz</button><button class="btn" data-act="reset">Baştan başla</button></div>
+    ${wrong.length ? `<h3 class="hand" style="font-size:24px;margin:20px 0 4px;color:var(--red)">Yanlış yaptığın sorular</h3>
+    <div class="wlist">${wrong.map(k => `<div class="witem"><p><b>${k + 1}.</b> ${esc(SORULAR[k].q.length > 110 ? SORULAR[k].q.slice(0, 110) + "…" : SORULAR[k].q)}</p><button class="btn sm blue" data-watch="${k}">▶ İzle</button></div>`).join("")}</div>` : ""}
+  </section>`;
+}
+
+function render() { view === "start" ? renderStart() : view === "result" ? renderResult() : renderQuiz(); }
+
+function go(i, d) { if (i < 0 || i >= N) return; dir = d ?? (i > st.cur ? 1 : -1); st.cur = i; save(); view = "quiz"; render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+function nextUnanswered(from) { for (let k = 1; k <= N; k++) { const j = (from + k) % N; if (st.a[j] === undefined) return j; } return -1; }
+
+function choose(j) {
+  const i = st.cur, q = SORULAR[i];
+  if (st.a[i] !== undefined) return;
+  st.a[i] = j; save(); render();
+  if (j === q.ans) {
+    setTimeout(() => {
+      if (st.cur !== i || view !== "quiz") return;
+      const n = i + 1 < N && st.a[i + 1] === undefined ? i + 1 : nextUnanswered(i);
+      n === -1 ? (view = "result", render()) : go(n, 1);
+    }, 750);
+  } else {
+    setTimeout(() => { if (st.cur === i) openSolution(i, true); }, 650);
+  }
+}
+
+app.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.opt !== undefined) return choose(+b.dataset.opt);
+  if (b.dataset.go !== undefined) return go(+b.dataset.go);
+  if (b.dataset.watch !== undefined) return openSolution(+b.dataset.watch, false);
+  const a = b.dataset.act;
+  if (a === "go") { st.started = true; save(); const n = st.a[st.cur] === undefined ? st.cur : nextUnanswered(st.cur); go(n === -1 ? 0 : n, 1); }
+  else if (a === "home") { view = "start"; render(); }
+  else if (a === "konu") openKonu();
+  else if (a === "prev") go(st.cur - 1, -1);
+  else if (a === "next") go(st.cur + 1, 1);
+  else if (a === "grid") { gridOpen = !gridOpen; render(); }
+  else if (a === "watch") openSolution(st.cur, false);
+  else if (a === "finish") { view = "result"; render(); window.scrollTo(0, 0); }
+  else if (a === "reset") { if (confirm("Tüm cevapların silinsin mi?")) { st = { cur: 0, a: {}, started: false }; save(); view = "start"; render(); } }
+  else if (a === "retry") { const w = Object.keys(st.a).map(Number).filter(k => st.a[k] !== SORULAR[k].ans); w.forEach(k => delete st.a[k]); save(); go(w.length ? Math.min(...w) : 0, 1); }
+});
+document.addEventListener("keydown", e => {
+  if (modal.classList.contains("show")) { if (e.key === "Escape") closePlayer(); if (e.key === " ") { e.preventDefault(); togglePlay(); } return; }
+  if (view !== "quiz") return;
+  const k = e.key.toUpperCase(), j = LET.indexOf(k);
+  if (j >= 0 && j < SORULAR[st.cur].opts.length) choose(j);
+  else if (e.key === "ArrowRight") go(st.cur + 1, 1);
+  else if (e.key === "ArrowLeft") go(st.cur - 1, -1);
+});
+
+/* ─────────────── Video oynatıcı (animasyonlu tahta + Türkçe seslendirme) ─────────────── */
+const modal = document.getElementById("modal"), board = document.getElementById("board"), cap = document.getElementById("cap"),
+  avatar = document.getElementById("avatar"), pPlay = document.getElementById("pPlay"), pBar = document.querySelector("#pBar i"),
+  pTime = document.getElementById("pTime"), pRate = document.getElementById("pRate"), pMute = document.getElementById("pMute"),
+  pTitle = document.getElementById("pTitle"), bigPlay = document.getElementById("bigPlay"), pDone = document.getElementById("pDone");
+const synth = window.speechSynthesis;
+let P = null; // {scenes, steps, i, playing, token, onDone}
+let rate = 1, muted = false, voice = null;
+try { rate = +localStorage.getItem(KEY + "-rate") || 1; muted = localStorage.getItem(KEY + "-mute") === "1"; } catch (e) {}
+function pickVoice() { if (!synth) return; const v = synth.getVoices(); voice = v.find(x => /^tr/i.test(x.lang) && /google|yelda|enhanced|premium/i.test(x.name)) || v.find(x => /^tr/i.test(x.lang)) || null; }
+if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+
+function entryRows(k) {
+  const b = k.filter(r => r[1]), a = k.filter(r => r[2]);
+  return { b, a, say: "Yevmiye kaydı: " + b.map(r => `${r[0].replace(/\(.*?\)/g, "")} ${fmt(r[1])} lira borçlu`).join(", ") + "; " + a.map(r => `${r[0].replace(/\(.*?\)/g, "")} ${fmt(r[2])} lira alacaklı`).join(", ") + "." };
+}
+function entryHTML(k, id) {
+  const { b, a } = entryRows(k);
+  const tb = b.reduce((s, r) => s + r[1], 0), ta = a.reduce((s, r) => s + r[2], 0);
+  return `<table class="jt" id="${id}"><tr><th>Hesap</th><th class="n">Borç</th><th class="n">Alacak</th></tr>
+  ${b.map(r => `<tr class="r"><td>${esc(r[0])}</td><td class="n">${fmt(r[1])}</td><td class="n"></td></tr>`).join("")}
+  ${a.map(r => `<tr class="r cr"><td>${esc(r[0])}</td><td class="n"></td><td class="n">${fmt(r[2])}</td></tr>`).join("")}
+  <tr class="sep"><td></td><td class="n"></td><td class="n"></td></tr>
+  <tr class="r"><td style="opacity:.75">Toplam</td><td class="n">${fmt(tb)}</td><td class="n">${fmt(ta)}</td></tr></table>`;
+}
+
+// Sahne: {title, quote?, items:[{kind:'li'|'jt'|'ans', html, say}], k?}
+function buildSolution(i) {
+  const q = SORULAR[i];
+  const items = q.s.map(s => ({ kind: "li", html: esc(s), say: s }));
+  if (q.k) items.push({ kind: "jt", k: q.k, say: entryRows(q.k).say });
+  items.push({ kind: "ans", html: `✔ Doğru cevap: <b>${LET[q.ans]})</b> ${esc(q.opts[q.ans])}`, say: `Doğru cevap ${LET[q.ans]} şıkkı: ${q.opts[q.ans]}.` });
+  return [{ title: `${i + 1}. Soru · ${q.t}`, quote: q.q, items, intro: `${i + 1}. sorunun çözümüne bakalım.` }];
+}
+function buildKonu() {
+  return KONU.map(sc => {
+    const items = sc.l.map(([t, s]) => ({ kind: "li", html: esc(t), say: s }));
+    if (sc.k) items.push({ kind: "jt", k: sc.k, say: "Örnek kayıt şöyle: " + entryRows(sc.k).say.replace("Yevmiye kaydı: ", "") });
+    return { title: sc.b, items };
   });
+}
 
-  function fitRadius() { vbox.style.borderRadius = (slide.clientWidth * 24 / 1920) + "px"; }
-  function show(i) {
-    cur = Math.max(1, Math.min(N, i));
-    img.src = src(cur);
-    img.alt = "Slayt " + cur;
-    vid.pause();
-    if (VIDEOS[cur]) {
-      vid.src = VIDEOS[cur]; vid.currentTime = 0;
-      vbox.style.display = "block"; play.style.display = "flex";
-      vid.style.visibility = "hidden";   // oynatılana kadar slayttaki kapak karesi görünür
-    } else {
-      vid.removeAttribute("src"); vid.load(); vbox.style.display = "none";
+function openPlayer(scenes, title, onDone, doneLabel, video) {
+  stopSpeech();
+  P = { scenes, steps: [], i: 0, playing: false, token: 0, onDone };
+  scenes.forEach((sc, si) => { if (sc.intro) P.steps.push({ si, ii: -1, say: sc.intro }); sc.items.forEach((it, ii) => P.steps.push({ si, ii, say: it.say })); });
+  pTitle.textContent = title; pDone.textContent = doneLabel || "Kapat";
+  modal.classList.add("show"); document.body.style.overflow = "hidden";
+  pRate.textContent = rate + "x"; pMute.textContent = muted ? "🔇" : "🔊";
+  if (video) { showVideo(video); return; }
+  avatar.style.display = ""; cap.style.display = "";
+  drawScene(0, -1); play();
+}
+function showVideo(url) {
+  P.video = true; avatar.style.display = "none"; cap.style.display = "none"; bigPlay.style.display = "none";
+  let src = url, m = url.match(/(?:youtu\.be\/|v=|shorts\/)([\w-]{11})/);
+  if (m) src = `https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0`;
+  board.innerHTML = /\.(mp4|webm|mov)(\?|$)/i.test(url) ? `<video class="vframe" src="${esc(url)}" controls autoplay playsinline></video>` : `<iframe class="vframe" src="${esc(src)}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+  pBar.style.width = "0"; pTime.textContent = "";
+}
+function drawScene(si, upto) {
+  const sc = P.scenes[si];
+  board.innerHTML = `<h3>${esc(sc.title)}</h3>${sc.quote ? `<p class="bq">${esc(sc.quote)}</p>` : ""}` +
+    sc.items.map((it, ii) => it.kind === "li" ? `<div class="li" data-ii="${ii}">${it.html}</div>` : it.kind === "ans" ? `<div class="ans" data-ii="${ii}">${it.html}</div>` : entryHTML(it.k, "jt" + ii).replace('class="jt"', `class="jt" data-ii="${ii}"`)).join("");
+  P.drawn = si; reveal(upto, true);
+}
+function reveal(upto, instant) {
+  board.querySelectorAll("[data-ii]").forEach(el => {
+    const ii = +el.dataset.ii, on = ii <= upto;
+    el.classList.toggle("on", on); el.classList.toggle("now", ii === upto);
+    if (el.tagName === "TABLE") {
+      const rows = el.querySelectorAll("tr.r");
+      rows.forEach((r, k) => { if (!on) r.classList.remove("on"); else if (instant) r.classList.add("on"); else setTimeout(() => r.classList.add("on"), 250 + k * 450 / rate); });
     }
-    count.textContent = cur + " / " + N;
-    notes.textContent = (window.NOTES && window.NOTES[cur - 1]) || "";
-    history.replaceState(null, "", "#" + cur);
-    fitRadius();
-  }
-  function toggleVideo() {
-    if (!VIDEOS[cur]) return;
-    if (vid.paused) { vid.style.visibility = "visible"; vid.play(); play.style.display = "none"; }
-    else { vid.pause(); play.style.display = "flex"; }
-  }
-  vid.addEventListener("ended", () => { play.style.display = "flex"; });
-  vbox.addEventListener("click", e => { e.stopPropagation(); toggleVideo(); });
-
-  const next = () => show(cur + 1), prev = () => show(cur - 1);
-  document.getElementById("next").onclick = next;
-  document.getElementById("prev").onclick = prev;
-  const fullscreen = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-  document.getElementById("fs").onclick = fullscreen;
-  document.getElementById("nt").onclick = () => document.body.classList.toggle("show-notes");
-  document.getElementById("hp").onclick = () => document.body.classList.toggle("show-help");
-
-  document.addEventListener("keydown", e => {
-    if (["ArrowRight", "PageDown", " ", "ArrowDown"].includes(e.key)) { e.preventDefault(); next(); }
-    else if (["ArrowLeft", "PageUp", "ArrowUp", "Backspace"].includes(e.key)) { e.preventDefault(); prev(); }
-    else if (e.key === "Home") show(1);
-    else if (e.key === "End") show(N);
-    else if (e.key === "f" || e.key === "F") fullscreen();
-    else if (e.key === "n" || e.key === "N") document.body.classList.toggle("show-notes");
-    else if (e.key === "Enter" || e.key === "k" || e.key === "K") toggleVideo();
-    else if (e.key === "?") document.body.classList.toggle("show-help");
   });
+  const now = board.querySelector(`[data-ii="${upto}"]`);
+  if (now) setTimeout(() => board.scrollTo({ top: Math.max(0, now.offsetTop - board.clientHeight + now.offsetHeight + 40) }), 60);
+}
+function stopSpeech() { if (P) P.token++; if (synth) synth.cancel(); avatar.classList.remove("talk"); }
+function speak(text, cb) {
+  const tok = ++P.token;
+  const done = () => { if (tok !== P.token) return; P.token++; avatar.classList.remove("talk"); cb(); };
+  cap.innerHTML = `<span>${esc(text)}</span>`;
+  const est = Math.max(1800, text.length * 68) / rate;
+  avatar.classList.add("talk");
+  if (!muted && synth && (voice || synth.getVoices().length === 0 || true)) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "tr-TR"; if (voice) u.voice = voice; u.rate = Math.min(1.05 * rate, 2);
+    u.onend = () => setTimeout(done, 350 / rate); u.onerror = () => setTimeout(done, 200);
+    synth.speak(u);
+    setTimeout(done, est * 1.9 + 4000); // emniyet: bazı tarayıcılar onend göndermez
+  } else setTimeout(done, est);
+}
+function step() {
+  if (!P || !P.playing) return;
+  if (P.i >= P.steps.length) { P.playing = false; pPlay.textContent = "↻"; avatar.classList.remove("talk"); cap.innerHTML = "<span>Video bitti. ↻ ile tekrar izleyebilirsin.</span>"; pDone.focus(); return; }
+  const s = P.steps[P.i];
+  if (P.drawn !== s.si) drawScene(s.si, s.ii - 1);
+  reveal(s.ii, false);
+  pBar.style.width = ((P.i + 1) / P.steps.length * 100) + "%"; pTime.textContent = `${P.i + 1}/${P.steps.length}`;
+  speak(s.say, () => { P.i++; step(); });
+}
+function play() { if (!P || P.video) return; if (P.i >= P.steps.length) { P.i = 0; P.drawn = -1; } P.playing = true; pPlay.textContent = "⏸"; bigPlay.style.display = "none"; step(); }
+function pause() { if (!P) return; P.playing = false; stopSpeech(); pPlay.textContent = "▶"; bigPlay.style.display = ""; }
+function togglePlay() { P && P.playing ? pause() : play(); }
+function jump(d) { if (!P || P.video) return; const was = P.playing; stopSpeech(); P.i = Math.max(0, Math.min(P.steps.length - 1, P.i + d)); const s = P.steps[P.i]; drawScene(s.si, s.ii); pBar.style.width = ((P.i + 1) / P.steps.length * 100) + "%"; pTime.textContent = `${P.i + 1}/${P.steps.length}`; if (was) { P.playing = true; step(); } }
+function closePlayer() { if (!P) return; const cb = P.onDone; pause(); P = null; board.innerHTML = ""; modal.classList.remove("show"); document.body.style.overflow = ""; bigPlay.style.display = "none"; cb && cb(); }
 
-  // dokunmatik ekranda kaydırma
-  let tx = null;
-  document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
-  document.addEventListener("touchend", e => {
-    if (tx === null) return;
-    const dx = e.changedTouches[0].clientX - tx; tx = null;
-    if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
-  });
+pPlay.onclick = togglePlay; bigPlay.onclick = play;
+document.getElementById("pPrev").onclick = () => jump(-1);
+document.getElementById("pNext").onclick = () => jump(1);
+document.getElementById("pClose").onclick = closePlayer; pDone.onclick = closePlayer;
+document.getElementById("pBar").parentElement.querySelector(".pb").onclick = e => { if (!P || P.video) return; const r = e.currentTarget.getBoundingClientRect(); jump(Math.floor((e.clientX - r.left) / r.width * P.steps.length) - P.i); };
+pRate.onclick = () => { rate = rate >= 1.5 ? 1 : +(rate + 0.25).toFixed(2); pRate.textContent = rate + "x"; try { localStorage.setItem(KEY + "-rate", rate); } catch (e) {} if (P && P.playing) { stopSpeech(); step(); } };
+pMute.onclick = () => { muted = !muted; pMute.textContent = muted ? "🔇" : "🔊"; try { localStorage.setItem(KEY + "-mute", muted ? "1" : "0"); } catch (e) {} if (P && P.playing) { stopSpeech(); step(); } };
+modal.addEventListener("click", e => { if (e.target === modal) closePlayer(); });
 
-  // fare durunca alt çubuk gizlenir
-  let idle;
-  const wake = () => { document.body.classList.remove("idle"); clearTimeout(idle); idle = setTimeout(() => document.body.classList.add("idle"), 2500); };
-  ["mousemove", "touchstart", "keydown"].forEach(ev => document.addEventListener(ev, wake, { passive: true }));
-  wake();
-  window.addEventListener("resize", fitRadius);
-  window.addEventListener("hashchange", () => { const i = parseInt(location.hash.slice(1), 10); if (i && i !== cur) show(i); });
+function openSolution(i, fromWrong) {
+  const q = SORULAR[i];
+  openPlayer(buildSolution(i), `Çözüm videosu · ${i + 1}. soru`, null, fromWrong ? "Anladım, devam →" : "Kapat", q.v);
+  if (fromWrong) P.onDone = () => { if (view === "quiz" && st.cur === i) { const n = i + 1 < N && st.a[i + 1] === undefined ? i + 1 : nextUnanswered(i); n === -1 ? (view = "result", render()) : go(n, 1); } };
+}
+function openKonu() { openPlayer(buildKonu(), "Konu anlatım videosu · Temel Muhasebe", null, "Kapat", window.KONU_VIDEO || ""); }
 
-  show(parseInt(location.hash.slice(1), 10) || 1);
+render();
+})();
 </script>
 </body>
 </html>
