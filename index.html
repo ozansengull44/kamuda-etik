@@ -141,6 +141,19 @@ header.top h1 small{display:block;font-size:17px;color:var(--blue)}
 .ctrl .t{font-size:12.5px;min-width:52px;text-align:center}
 .ctrl .next{background:var(--yellow);color:#111;border-color:var(--yellow)}
 .vframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.namebox{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.namebox input{flex:1 1 220px;font:inherit;font-weight:700;padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
+.namebox input.err{border-color:var(--red);animation:shake .35s}
+.lb{margin-top:18px;background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:16px 18px;box-shadow:5px 5px 0 var(--ink)}
+.lb h3{font-family:"Patrick Hand",cursive;font-size:26px;margin:0 0 8px;color:var(--red)}
+.lb ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.lb li{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:#fff;border:1.5px solid var(--line)}
+.lb li.me{border-color:var(--blue);background:#eef3ff}
+.lb .rk{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--paper);border:2px solid var(--ink);font-size:14px}
+.lb li:nth-child(1) .rk{background:#ffd54a}.lb li:nth-child(2) .rk{background:#dfe3ea}.lb li:nth-child(3) .rk{background:#f0b787}
+.lb .nm{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .pt{font-weight:800;color:var(--green)}
+.lb .sub{font-size:12px;color:var(--muted);font-weight:600}
 .note{font-size:12.5px;color:var(--muted);margin-top:22px;text-align:center}
 .kbd{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:12px;background:#fff}
 .board{padding-bottom:120px}
@@ -227,6 +240,7 @@ function renderStart() {
       <div><b>Yanlış cevap</b>Deneme durur ve o sorunun çözüm videosu açılır.</div>
       <div><b>İlerleme kaydedilir</b>Sayfayı kapatsan da kaldığın yerden devam edersin.</div>
     </div>
+    <div class="namebox"><input id="nameIn" maxlength="40" placeholder="Adın Soyadın (sıralamada görünecek)" value="${esc(st.name || "")}" autocomplete="name"></div>
     <div class="row">
       <button class="btn primary" data-act="go">${done ? `Devam et (${done}/${N})` : "Denemeye başla →"}</button>
       <button class="btn blue" data-act="konu">🎬 Önce konu anlatımını izle</button>
@@ -234,6 +248,7 @@ function renderStart() {
     </div>
     <div class="topics">${topics.map(t => `<span class="chip">${esc(t)} · ${SORULAR.filter(q => q.t === t).length}</span>`).join("")}</div>
   </section>
+  ${lbHTML()}
   <p class="note">Klavye: <span class="kbd">A</span>–<span class="kbd">E</span> şık seçer · <span class="kbd">←</span> <span class="kbd">→</span> sorular arasında gezer</p>`;
 }
 
@@ -279,7 +294,34 @@ function renderResult() {
     <div class="row"><button class="btn primary" data-act="retry">Yanlışları yeniden çöz</button><button class="btn" data-act="reset">Baştan başla</button></div>
     ${wrong.length ? `<h3 class="hand" style="font-size:24px;margin:20px 0 4px;color:var(--red)">Yanlış yaptığın sorular</h3>
     <div class="wlist">${wrong.map(k => `<div class="witem"><p><b>${k + 1}.</b> ${esc(SORULAR[k].q.length > 110 ? SORULAR[k].q.slice(0, 110) + "…" : SORULAR[k].q)}</p><button class="btn sm blue" data-watch="${k}">▶ İzle</button></div>`).join("")}</div>` : ""}
-  </section>`;
+  </section>${lbHTML()}`;
+  sendScore();
+}
+
+/* ─────────────── Sıralama listesi (Google E-Tablo) ─────────────── */
+const SKOR_URL = "https://script.google.com/macros/s/AKfycbwf_0QKA5osEQL3Tkygzq8oHvNFGSYRw5hjFAftcOO2sjRibiQwt60xPrTvawLblxxXSw/exec";
+let LB = null, lbErr = false, lbLoading = false;
+function lbHTML() {
+  if (!SKOR_URL) return "";
+  let body;
+  if (lbErr) body = `<p class="sub">Sıralama şu an yüklenemedi.</p>`;
+  else if (!LB) body = `<p class="sub">Yükleniyor…</p>`;
+  else if (!LB.length) body = `<p class="sub">Henüz kimse denemeyi bitirmedi. İlk sen ol!</p>`;
+  else body = `<ol>${LB.map((r, i) => `<li class="${st.name && r.name.toLocaleLowerCase("tr") === st.name.toLocaleLowerCase("tr") ? "me" : ""}"><span class="rk">${i + 1}</span><span class="nm">${esc(r.name)}</span><span class="sub">${r.ok} D · ${r.bad} Y</span><span class="pt">${r.score}</span></li>`).join("")}</ol>`;
+  return `<section class="lb"><h3>🏆 Sıralama</h3>${body}<p class="sub" style="margin-top:8px">Denemeyi bitirenler en yüksek puandan aşağı doğru sıralanır. Aynı isimle tekrar çözersen en iyi puanın sayılır.</p></section>`;
+}
+function setLB(list) { LB = list || []; lbErr = false; if (view !== "quiz") render(); }
+function loadLB() {
+  if (!SKOR_URL || lbLoading) return; lbLoading = true;
+  fetch(SKOR_URL).then(r => r.json()).then(d => setLB(d.list)).catch(() => { lbErr = true; if (view !== "quiz") render(); }).finally(() => lbLoading = false);
+}
+function sendScore() {
+  if (!SKOR_URL || !st.name) return;
+  const c = counts(), sig = c.ok + "/" + c.bad;
+  if (c.ok + c.bad === 0 || st.sent === sig) return;
+  st.sent = sig; save();
+  fetch(SKOR_URL, { method: "POST", body: JSON.stringify({ name: st.name, ok: c.ok, bad: c.bad }) })
+    .then(r => r.json()).then(d => setLB(d.list)).catch(() => { st.sent = ""; save(); });
 }
 
 function render() { view === "start" ? renderStart() : view === "result" ? renderResult() : renderQuiz(); }
@@ -308,7 +350,11 @@ app.addEventListener("click", e => {
   if (b.dataset.go !== undefined) return go(+b.dataset.go);
   if (b.dataset.watch !== undefined) return openSolution(+b.dataset.watch, false);
   const a = b.dataset.act;
-  if (a === "go") { st.started = true; save(); const n = st.a[st.cur] === undefined ? st.cur : nextUnanswered(st.cur); go(n === -1 ? 0 : n, 1); }
+  if (a === "go") {
+    const inp = document.getElementById("nameIn"), nm = (inp.value || "").replace(/\s+/g, " ").trim();
+    if (nm.length < 2) { inp.classList.remove("err"); void inp.offsetWidth; inp.classList.add("err"); inp.focus(); inp.placeholder = "Önce adını yazmalısın"; return; }
+    if (st.name && st.name !== nm) st.sent = "";
+    st.name = nm; st.started = true; save(); const n = st.a[st.cur] === undefined ? st.cur : nextUnanswered(st.cur); go(n === -1 ? 0 : n, 1); }
   else if (a === "home") { view = "start"; render(); }
   else if (a === "konu") openKonu();
   else if (a === "prev") go(st.cur - 1, -1);
@@ -408,8 +454,8 @@ function reveal(upto, instant) {
 }
 function stopSpeech() { if (P) P.token++; if (synth) synth.cancel(); avatar.classList.remove("talk"); }
 function speak(text, cb) {
-  const tok = ++P.token;
-  const done = () => { if (tok !== P.token) return; P.token++; avatar.classList.remove("talk"); cb(); };
+  const p = P, tok = ++P.token;
+  const done = () => { if (P !== p || tok !== p.token) return; p.token++; avatar.classList.remove("talk"); cb(); };
   cap.innerHTML = `<span>${esc(text)}</span>`;
   const est = Math.max(1800, text.length * 68) / rate;
   avatar.classList.add("talk");
@@ -452,7 +498,9 @@ function openSolution(i, fromWrong) {
 }
 function openKonu() { openPlayer(buildKonu(), "Konu anlatım videosu · Temel Muhasebe", null, "Kapat", window.KONU_VIDEO || ""); }
 
-render();
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "nameIn") app.querySelector('[data-act="go"]').click(); });
+let view0 = view; view = st.started && !st.name ? "start" : view0;
+render(); loadLB();
 })();
 </script>
 </body>
