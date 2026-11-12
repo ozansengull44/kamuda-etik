@@ -226,7 +226,8 @@ let view = st.started ? "quiz" : "start", gridOpen = false, dir = 1;
 function header() {
   return `<header class="top"><h1>Temel Muhasebe<small>Vize Denemesi · ${N} soru</small></h1>
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn blue sm" data-act="konu">🎬 Konu Anlatımı</button>
-  ${view !== "start" ? `<button class="btn sm" data-act="home">Ana sayfa</button>` : ""}</div></header>`;
+  ${view !== "start" ? `<button class="btn sm" data-act="home">Ana sayfa</button>` : ""}
+  ${Object.keys(st.a).length ? `<button class="btn sm ghost" data-act="reset">🔄 Sıfırla</button>` : ""}</div></header>`;
 }
 
 function renderStart() {
@@ -244,7 +245,7 @@ function renderStart() {
     <div class="row">
       <button class="btn primary" data-act="go">${done ? `Devam et (${done}/${N})` : "Denemeye başla →"}</button>
       <button class="btn blue" data-act="konu">🎬 Önce konu anlatımını izle</button>
-      ${done ? `<button class="btn ghost" data-act="reset">Sıfırla</button>` : ""}
+      
     </div>
     <div class="topics">${topics.map(t => `<span class="chip">${esc(t)} · ${SORULAR.filter(q => q.t === t).length}</span>`).join("")}</div>
   </section>
@@ -362,7 +363,7 @@ app.addEventListener("click", e => {
   else if (a === "grid") { gridOpen = !gridOpen; render(); }
   else if (a === "watch") openSolution(st.cur, false);
   else if (a === "finish") { view = "result"; render(); window.scrollTo(0, 0); }
-  else if (a === "reset") { if (confirm("Tüm cevapların silinsin mi?")) { st = { cur: 0, a: {}, started: false }; save(); view = "start"; render(); } }
+  else if (a === "reset") { if (confirm("Tüm cevapların silinsin mi?")) { st = { cur: 0, a: {}, started: false, name: st.name }; save(); gridOpen = false; view = "start"; render(); } }
   else if (a === "retry") { const w = Object.keys(st.a).map(Number).filter(k => st.a[k] !== SORULAR[k].ans); w.forEach(k => delete st.a[k]); save(); go(w.length ? Math.min(...w) : 0, 1); }
 });
 document.addEventListener("keydown", e => {
