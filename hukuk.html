@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temel Hukuk Denemesi</title>
+<meta name="description" content="Temel Hukuk denemesi: canlı ders notlarından 200 soru, konu anlatım videosu ve her soru için çözüm videosu.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<!-- Video oynatıcı -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Çözüm videosu">
+  <div class="player">
+    <div class="ptitle"><span class="rec" id="pTitle">Çözüm videosu</span><button class="btn sm ghost" style="color:#eee;border-color:#444" id="pClose">Kapat ✕</button></div>
+    <div class="screen" id="screen">
+      <div class="board" id="board"></div>
+      <svg class="avatar" id="avatar" viewBox="0 0 104 120" aria-hidden="true">
+        <ellipse cx="52" cy="116" rx="40" ry="5" fill="rgba(0,0,0,.25)"/>
+        <path d="M14 118 C16 86 30 76 52 76 C74 76 88 86 90 118 Z" fill="#2a54b0"/>
+        <path d="M44 78 L52 96 L60 78 Z" fill="#fff"/>
+        <path d="M50 82 L52 100 L54 82 Z" fill="#c8372d"/>
+        <g class="arm"><path d="M84 96 C96 88 98 74 92 66" stroke="#2a54b0" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="92" cy="64" r="6" fill="#f2c7a5"/><rect x="90" y="46" width="4" height="18" rx="2" fill="#ffe46b" transform="rotate(18 92 55)"/></g>
+        <rect x="46" y="64" width="12" height="14" fill="#f2c7a5"/>
+        <ellipse cx="52" cy="44" rx="25" ry="27" fill="#f2c7a5"/>
+        <path d="M27 42 C26 20 40 13 54 14 C70 15 80 26 77 42 C74 32 66 26 52 27 C40 27 32 32 27 42Z" fill="#3b2a20"/>
+        <circle cx="43" cy="46" r="7" fill="none" stroke="#222" stroke-width="2"/><circle cx="61" cy="46" r="7" fill="none" stroke="#222" stroke-width="2"/><path d="M50 46 H54" stroke="#222" stroke-width="2"/>
+        <circle cx="43" cy="46" r="2.2" fill="#222"/><circle cx="61" cy="46" r="2.2" fill="#222"/>
+        <ellipse class="mouth" cx="52" cy="60" rx="6" ry="3.4" fill="#8a2a22"/>
+      </svg>
+      <div class="cap" id="cap"></div>
+      <button class="big" id="bigPlay" aria-label="Oynat" style="display:none"><b>▶</b></button>
+    </div>
+    <div class="ctrl">
+      <button id="pPlay" aria-label="Oynat / Duraklat">⏸</button>
+      <button id="pPrev" aria-label="Önceki adım">⏮</button>
+      <button id="pNext" aria-label="Sonraki adım">⏭</button>
+      <div class="pb" id="pBar"><i></i></div>
+      <span class="t" id="pTime">0/0</span>
+      <button id="pRate">1x</button>
+      <button id="pMute">🔊</button>
+      <button id="pDone" class="next">Devam →</button>
+    </div>
+  </div>
+</div>
+
+<script>window.DERS = { key: "hukuk-v1", ad: "Temel Hukuk", alt: "Sınav Denemesi", etiket: "Hukuk",
+  h2: "Canlı ders notlarından 200 soruluk deneme",
+  intro: "Sorular canlı ders notlarından hazırlandı: hukukun tanımı ve sosyal düzen kuralları, hukuk sistemleri, kamu–özel hukuk, kaynaklar ve normlar hiyerarşisi, Anayasa, yorum ve çatışma, yer–zaman, hukuki işlem, kişilik ve ehliyet, haklar, sorumluluk, yargı örgütü, yaptırım, borç, mülkiyet ve miras.",
+  diger: { ad: "Temel Muhasebe", href: "./" }, pdf: "Temel-Hukuk-Ders-Notlari.pdf" };</script>
+<script src="hukuk-sorular.js"></script>
+<script src="hukuk-konu.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
