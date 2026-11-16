@@ -148,3 +148,8 @@ header.top h1 small{display:block;font-size:17px;color:var(--blue)}
 .board{padding-bottom:120px}
 @media (max-width:520px){.jt th.n,.jt td.n{width:72px}.qtext{font-size:16.5px}.avatar{width:72px;height:84px}.board h3,.board .bq,.board .li{padding-right:70px}.stats span{margin-left:6px}}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
+
+.dersler{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+.dersler a,.dersler span{font-weight:800;font-size:14px;padding:7px 12px;border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--ink);text-decoration:none}
+.dersler a:hover{border-color:var(--blue);color:var(--blue)}
+.dersler .on{background:var(--yellow);border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
