@@ -1,7 +1,7 @@
 (() => {
 const N = SORULAR.length, LET = "ABCDE";
 const D = window.DERS, KEY = D.key;
-const DERSLER = [{ key: "muh-vize-v1", ad: "📒 Temel Muhasebe", href: "./" }, { key: "hukuk-v1", ad: "⚖️ Temel Hukuk", href: "hukuk.html" }, { key: "isletme-v1", ad: "🏭 Genel İşletme", href: "isletme.html" }];
+const DERSLER = [{ key: "muh-vize-v1", ad: "📒 Temel Muhasebe", href: "./" }, { key: "hukuk-v2", ad: "⚖️ Temel Hukuk", href: "hukuk.html" }, { key: "isletme-v1", ad: "🏭 Genel İşletme", href: "isletme.html" }];
 const fmt = n => n.toLocaleString("tr-TR");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
@@ -22,7 +22,8 @@ const app = document.getElementById("app");
 let view = st.started ? "quiz" : "start", gridOpen = false, dir = 1;
 
 function header() {
-  return `<nav class="dersler">${DERSLER.map(d => d.key === KEY ? `<span class="on">${d.ad}</span>` : `<a href="${d.href}">${d.ad}</a>`).join("")}</nav>
+  return `<div class="led" aria-label="Begüm Başkan Hayır Notları"><div class="led-track"><span>★ BEGÜM BAŞKAN HAYIR NOTLARI ★</span><span>★ BEGÜM BAŞKAN HAYIR NOTLARI ★</span><span>★ BEGÜM BAŞKAN HAYIR NOTLARI ★</span><span>★ BEGÜM BAŞKAN HAYIR NOTLARI ★</span></div></div>
+  <nav class="dersler">${DERSLER.map(d => d.key === KEY ? `<span class="on">${d.ad}</span>` : `<a href="${d.href}">${d.ad}</a>`).join("")}</nav>
   <header class="top"><h1>${D.ad}<small>${D.alt} · ${N} soru</small></h1>
   <div style="display:flex;gap:8px;flex-wrap:wrap">${D.pdf ? `<a class="btn sm ghost" href="${D.pdf}" target="_blank" rel="noopener">📄 Ders notu</a>` : ""}<button class="btn blue sm" data-act="konu">🎬 Konu Anlatımı</button>
   ${view !== "start" ? `<button class="btn sm" data-act="home">Ana sayfa</button>` : ""}

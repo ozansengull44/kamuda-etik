@@ -153,3 +153,10 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .dersler a,.dersler span{font-weight:800;font-size:14px;padding:7px 12px;border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--ink);text-decoration:none}
 .dersler a:hover{border-color:var(--blue);color:var(--blue)}
 .dersler .on{background:var(--yellow);border-color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+
+.led{position:relative;overflow:hidden;background:#0b0b0b;border:2px solid #2a2a2a;border-radius:10px;height:34px;margin:10px 0 2px;box-shadow:inset 0 0 12px #000}
+.led::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(circle,transparent 1.1px,#0b0b0b 1.6px);background-size:4px 4px;opacity:.55}
+.led-track{display:flex;width:max-content;animation:ledscroll 18s linear infinite}
+.led-track span{flex:none;padding:0 28px;line-height:30px;font-family:"Courier New",monospace;font-weight:800;font-size:19px;letter-spacing:3px;color:#ff9a1f;text-shadow:0 0 4px #ff7b00,0 0 10px #ff5a00;white-space:nowrap}
+@keyframes ledscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.led-track{animation-duration:60s}}
